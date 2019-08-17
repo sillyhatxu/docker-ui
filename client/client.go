@@ -10,10 +10,26 @@ type DockerClient struct {
 	ctx context.Context
 }
 
-func PS() ([]types.Container, error) {
+func New() *DockerClient {
+	return &DockerClient{}
+}
+
+func (dc DockerClient) Info() (*types.Info, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
 	}
-	return cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	info, err := cli.Info(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return &info, nil
+}
+
+func (dc DockerClient) ClientVersion() (string, error) {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return "", err
+	}
+	return cli.ClientVersion(), nil
 }
