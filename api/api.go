@@ -67,7 +67,12 @@ func login(context *gin.Context) {
 }
 
 func serviceList(context *gin.Context) {
-
+	array, err := service.ServiceList()
+	if err != nil {
+		context.JSON(http.StatusOK, response.ServerError(nil, err.Error(), nil))
+		return
+	}
+	context.JSON(http.StatusOK, response.ServerSuccess(array, nil))
 }
 
 func containerList(context *gin.Context) {
