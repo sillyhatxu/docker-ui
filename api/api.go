@@ -3,8 +3,11 @@ package api
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/sillyhatxu/convenient-utils/response"
 	"github.com/sillyhatxu/docker-ui/config"
+	"github.com/sillyhatxu/docker-ui/service"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"time"
 )
 
@@ -35,9 +38,17 @@ func SetupRouter() *gin.Engine {
 	router.GET("/login", login)
 	containerGroup := router.Group("/containers")
 	{
-		containerGroup.GET("", list)
+		containerGroup.GET("", containerList)
+		containerGroup.GET("/stats", stats)
 		containerGroup.POST("/stop", stop)
 		containerGroup.POST("/restart", restart)
+	}
+	serviceGroup := router.Group("/services")
+	{
+		serviceGroup.GET("", serviceList)
+		serviceGroup.GET("/stats", stats)
+		serviceGroup.POST("/stop", stop)
+		serviceGroup.POST("/restart", restart)
 	}
 	imageGroup := router.Group("/images")
 	{
@@ -55,8 +66,25 @@ func login(context *gin.Context) {
 
 }
 
+func serviceList(context *gin.Context) {
+
+}
+
+func containerList(context *gin.Context) {
+
+}
+
 func list(context *gin.Context) {
 
+}
+
+func stats(context *gin.Context) {
+	statsArray, err := service.DockerStats()
+	if err != nil {
+		context.JSON(http.StatusOK, response.ServerError(nil, err.Error(), nil))
+		return
+	}
+	context.JSON(http.StatusOK, response.ServerSuccess(statsArray, nil))
 }
 
 func stop(context *gin.Context) {
